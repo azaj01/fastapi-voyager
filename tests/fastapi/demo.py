@@ -1,21 +1,20 @@
 from dataclasses import dataclass
-from typing import Generic, TypeVar, Annotated
+from typing import Annotated, Generic, TypeVar
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
-from pydantic_resolve import Resolver, DefineSubset, ExposeAs, SendTo, Collector
+from pydantic_resolve import Collector, DefineSubset, ExposeAs, Resolver, SendTo
 
-
-from tests.service.schema.schema import Member, Sprint, Story, Task
-from tests.service.schema.extra import A
 from tests.service.schema.base_entity import BaseEntity
+from tests.service.schema.extra import A
+from tests.service.schema.schema import Member, Sprint, Story, Task
 
 diagram = BaseEntity.get_diagram()
 
 app = FastAPI(title="Demo API", description="A demo FastAPI application for router visualization")
 
 @app.get("/sprints", tags=['for-restapi', 'group_a'], response_model=list[Sprint])
-def get_sprint():
+def get_sprints():
     return []
 
 class PageMember(Member):

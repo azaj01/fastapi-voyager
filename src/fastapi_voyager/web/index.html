@@ -4,32 +4,29 @@
     <meta name="theme-color" content="#ffffff" />
     <link
       rel="stylesheet"
-      href="fastapi-voyager-static/graphviz.svg.css<!-- VERSION_PLACEHOLDER -->"
+      href="<!-- STATIC_PATH -->/graphviz.svg.css<!-- VERSION_PLACEHOLDER -->"
     />
-    <link
-      rel="stylesheet"
-      href="fastapi-voyager-static/quasar.min.css<!-- VERSION_PLACEHOLDER -->"
-    />
+    <link rel="stylesheet" href="<!-- STATIC_PATH -->/quasar.min.css<!-- VERSION_PLACEHOLDER -->" />
     <!-- App Icons / Favicons -->
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="fastapi-voyager-static/icon/apple-touch-icon.png"
+      href="<!-- STATIC_PATH -->/icon/apple-touch-icon.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="fastapi-voyager-static/icon/favicon-32x32.png"
+      href="<!-- STATIC_PATH -->/icon/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="fastapi-voyager-static/icon/favicon-16x16.png"
+      href="<!-- STATIC_PATH -->/icon/favicon-16x16.png"
     />
-    <link rel="icon" href="fastapi-voyager-static/icon/favicon.ico" sizes="any" />
-    <link rel="manifest" href="fastapi-voyager-static/icon/site.webmanifest" />
+    <link rel="icon" href="<!-- STATIC_PATH -->/icon/favicon.ico" sizes="any" />
+    <link rel="manifest" href="<!-- STATIC_PATH -->/icon/site.webmanifest" />
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons"
       rel="stylesheet"
@@ -191,7 +188,7 @@
               style="font-size: 18px; font-weight: bold; display: flex; align-items: baseline"
             >
               <q-icon class="q-mr-sm" name="satellite_alt"></q-icon>
-              <span> FastAPI Voyager </span>
+              <span> {{ store.state.framework_name }} Voyager </span>
               <span
                 v-if="store.state.version"
                 style="font-size: 12px; margin-left: 8px; font-weight: normal"
@@ -580,7 +577,7 @@
       </q-dialog>
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="fastapi-voyager-static/quasar.min.js<!-- VERSION_PLACEHOLDER -->"></script>
+    <script src="<!-- STATIC_PATH -->/quasar.min.js<!-- VERSION_PLACEHOLDER -->"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"
       integrity="sha512-egJ/Y+22P9NQ9aIyVCh0VCOsfydyn8eNmqBy+y2CnJG+fpRIxXMS6jbWP8tVKp0jp+NO5n8WtMUAnNnGoJKi4w=="
@@ -602,7 +599,7 @@
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
-    <script src="fastapi-voyager-static/graphviz.svg.js<!-- VERSION_PLACEHOLDER -->"></script>
+    <script src="<!-- STATIC_PATH -->/graphviz.svg.js<!-- VERSION_PLACEHOLDER -->"></script>
     <!-- highlight.js minimal ES module load (python only) -->
     <link
       rel="stylesheet"
@@ -626,7 +623,7 @@
     </script>
     <script
       type="module"
-      src="fastapi-voyager-static/vue-main.js<!-- VERSION_PLACEHOLDER -->"
+      src="<!-- STATIC_PATH -->/vue-main.js<!-- VERSION_PLACEHOLDER -->"
     ></script>
 
     <!-- GA_SNIPPET -->
