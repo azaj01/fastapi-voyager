@@ -176,8 +176,12 @@
     - [x] internal refactor: graph-ui.js
     - [x] enhance the selected and unselected node & edges
 
-## 0.16, enhance er diagram
-- 0.16.0
+## 0.16
+- 0.16.0alpha
+    - [x] support django ninja and litestar
+
+## 0.17, enhance er diagram
+- 0.17.0
     - [ ] show loader name
     - [ ] show relationship list when double click entity in er diagram
     - [ ] highlight entity in use case
