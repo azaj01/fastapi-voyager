@@ -38,13 +38,15 @@ class DiagramRenderer(Renderer):
         self,
         *,
         show_fields: FieldType = 'single',
-        show_module: bool = True
+        show_module: bool = True,
+        theme_color: str | None = None
     ) -> None:
         # Initialize parent Renderer with shared config
         super().__init__(
             show_fields=show_fields,
             show_module=show_module,
-            config=RenderConfig()  # Use unified style configuration
+            config=RenderConfig(),  # Use unified style configuration
+            theme_color=theme_color,
         )
         logger.info(f'show_module: {self.show_module}')
 
@@ -99,10 +101,11 @@ class DiagramRenderer(Renderer):
 
 
 class VoyagerErDiagram:
-    def __init__(self, 
-                 er_diagram: ErDiagram, 
+    def __init__(self,
+                 er_diagram: ErDiagram,
                  show_fields: FieldType = 'single',
-                 show_module: bool = False):
+                 show_module: bool = False,
+                 theme_color: str | None = None):
 
         self.er_diagram = er_diagram
         self.nodes: list[SchemaNode] = []
@@ -115,6 +118,7 @@ class VoyagerErDiagram:
 
         self.show_field = show_fields
         self.show_module = show_module
+        self.theme_color = theme_color
     
     def generate_node_head(self, link_name: str):
         return f'{link_name}::{PK}'
@@ -209,7 +213,11 @@ class VoyagerErDiagram:
 
         for entity in self.er_diagram.configs:
             self.analysis_entity(entity)
-        renderer = DiagramRenderer(show_fields=self.show_field, show_module=self.show_module)
+        renderer = DiagramRenderer(
+            show_fields=self.show_field,
+            show_module=self.show_module,
+            theme_color=self.theme_color
+        )
         return renderer.render_dot(list(self.node_set.values()), self.links)
 
 

@@ -9,7 +9,9 @@ from typing import Any
 from pydantic_resolve import ErDiagram
 
 from fastapi_voyager.er_diagram import VoyagerErDiagram
+from fastapi_voyager.introspectors.detector import FrameworkType, detect_framework
 from fastapi_voyager.render import Renderer
+from fastapi_voyager.render_style import RenderConfig
 from fastapi_voyager.type import CoreData, SchemaNode, Tag
 from fastapi_voyager.type_helper import get_source, get_vscode_link
 from fastapi_voyager.version import __version__
@@ -23,6 +25,7 @@ STATIC_FILES_PATH = "/fastapi-voyager-static"
 GA_PLACEHOLDER = "<!-- GA_SNIPPET -->"
 VERSION_PLACEHOLDER = "<!-- VERSION_PLACEHOLDER -->"
 STATIC_PATH_PLACEHOLDER = "<!-- STATIC_PATH -->"
+THEME_COLOR_PLACEHOLDER = "<!-- THEME_COLOR -->"
 
 
 def build_ga_snippet(ga_id: str | None) -> str:
@@ -70,13 +73,32 @@ class VoyagerContext:
         self.ga_id = ga_id
         self.er_diagram = er_diagram
         self.enable_pydantic_resolve_meta = enable_pydantic_resolve_meta
-        self.framework_name = framework_name or "API"
+
+        # Detect and store framework type (single source of truth)
+        self._framework_type = detect_framework(target_app)
+        # Display name for frontend (backward compatible)
+        self.framework_name = framework_name or self._get_display_name()
+
+    def _get_display_name(self) -> str:
+        """Get display name for the detected framework type."""
+        display_names = {
+            FrameworkType.FASTAPI: "FastAPI",
+            FrameworkType.DJANGO_NINJA: "Django Ninja",
+            FrameworkType.LITESTAR: "Litestar",
+        }
+        return display_names.get(self._framework_type, "API")
+
+    def _get_theme_color(self) -> str:
+        """Get theme color for the current framework."""
+        config = RenderConfig()
+        return config.colors.get_framework_color(self._framework_type)
 
     def get_voyager(self, **kwargs) -> Voyager:
         """Create a Voyager instance with common configuration."""
         config = {
             "module_color": self.module_color,
             "show_pydantic_resolve_meta": self.enable_pydantic_resolve_meta,
+            "theme_color": self._get_theme_color(),
         }
         config.update(kwargs)
         return Voyager(**config)
@@ -179,6 +201,7 @@ class VoyagerContext:
             show_fields=core_data.show_fields,
             module_color=core_data.module_color,
             schema=core_data.schema,
+            theme_color=self._get_theme_color(),
         )
         return renderer.render_dot(
             core_data.tags, core_data.routes, core_data.nodes, core_data.links
@@ -191,6 +214,7 @@ class VoyagerContext:
                 self.er_diagram,
                 show_fields=payload.get("show_fields", "object"),
                 show_module=payload.get("show_module", True),
+                theme_color=self._get_theme_color(),
             ).render_dot()
         return ""
 
@@ -203,6 +227,8 @@ class VoyagerContext:
             content = content.replace(VERSION_PLACEHOLDER, f"?v={__version__}")
             # Replace static files path placeholder with actual path (without leading slash)
             content = content.replace(STATIC_PATH_PLACEHOLDER, STATIC_FILES_PATH.lstrip("/"))
+            # Replace theme color placeholder with framework-specific color
+            content = content.replace(THEME_COLOR_PLACEHOLDER, self._get_theme_color())
             return content
         # fallback simple page if index.html missing
         return """

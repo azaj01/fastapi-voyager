@@ -63,6 +63,7 @@ class Renderer:
         show_module: bool = True,
         show_pydantic_resolve_meta: bool = False,
         config: RenderConfig | None = None,
+        theme_color: str | None = None,
     ) -> None:
         self.show_fields = show_fields if show_fields in ('single', 'object', 'all') else 'single'
         self.module_color = module_color or {}
@@ -74,6 +75,9 @@ class Renderer:
         self.config = config or RenderConfig()
         self.colors = self.config.colors
         self.style = self.config.style
+
+        # Framework theme color (overrides default primary color)
+        self.theme_color = theme_color or self.colors.primary
 
         # Initialize template renderer
         self.template_renderer = TemplateRenderer()
@@ -228,7 +232,7 @@ class Renderer:
             rows.append(self._render_schema_field(field))
 
         # Determine header color
-        default_color = self.colors.primary if color is None else color
+        default_color = self.theme_color if color is None else color
         header_color = self.colors.highlight if node.id == self.schema else default_color
 
         # Render header

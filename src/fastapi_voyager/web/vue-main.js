@@ -324,9 +324,10 @@ const app = createApp({
 
 app.use(window.Quasar)
 
-// Set Quasar primary theme color to green
+// Set Quasar primary theme color from framework configuration
 if (window.Quasar && typeof window.Quasar.setCssVar === "function") {
-  window.Quasar.setCssVar("primary", "#009485")
+  const themeColor = window.FRAMEWORK_THEME_COLOR || "#009485"
+  window.Quasar.setCssVar("primary", themeColor)
 }
 
 app.component("schema-code-display", SchemaCodeDisplay) // double click to see node details

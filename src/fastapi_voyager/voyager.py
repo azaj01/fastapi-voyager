@@ -24,8 +24,8 @@ from fastapi_voyager.type_helper import (
 
 class Voyager:
     def __init__(
-            self, 
-            schema: str | None = None, 
+            self,
+            schema: str | None = None,
             schema_field: str | None = None,
             show_fields: FieldType = 'single',
             include_tags: list[str] | None = None,
@@ -34,6 +34,7 @@ class Voyager:
             hide_primitive_route: bool = False,
             show_module: bool = True,
             show_pydantic_resolve_meta: bool = False,
+            theme_color: str | None = None,
         ):
 
         self.routes: list[Route] = []
@@ -57,6 +58,7 @@ class Voyager:
         self.hide_primitive_route = hide_primitive_route
         self.show_module = show_module
         self.show_pydantic_resolve_meta = show_pydantic_resolve_meta
+        self.theme_color = theme_color
 
     def _get_introspector(self, app) -> AppIntrospector:
         """
@@ -351,14 +353,15 @@ class Voyager:
 
         renderer = Renderer(
             show_fields=self.show_fields,
-            module_color=self.module_color, 
-            schema=self.schema, 
+            module_color=self.module_color,
+            schema=self.schema,
             show_module=self.show_module,
-            show_pydantic_resolve_meta=self.show_pydantic_resolve_meta)
+            show_pydantic_resolve_meta=self.show_pydantic_resolve_meta,
+            theme_color=self.theme_color)
 
         _tags, _routes, _links = self.handle_hide(_tags, _routes, _links)
         return renderer.render_dot(_tags, _routes, _nodes, _links)
-    
+
 
     def render_tag_level_brief_dot(self, module_prefix: str | None = None):
         _tags, _routes, _nodes, _links = filter_graph(
@@ -379,7 +382,12 @@ class Voyager:
             links=_links,
         )
 
-        renderer = Renderer(show_fields=self.show_fields, module_color=self.module_color, schema=self.schema, show_module=self.show_module)
+        renderer = Renderer(
+            show_fields=self.show_fields,
+            module_color=self.module_color,
+            schema=self.schema,
+            show_module=self.show_module,
+            theme_color=self.theme_color)
 
         _tags, _routes, _links = self.handle_hide(_tags, _routes, _links)
         return renderer.render_dot(_tags, _routes, _nodes, _links, True)
@@ -403,7 +411,12 @@ class Voyager:
             links=_links,
         )
 
-        renderer = Renderer(show_fields=self.show_fields, module_color=self.module_color, schema=self.schema, show_module=self.show_module)
+        renderer = Renderer(
+            show_fields=self.show_fields,
+            module_color=self.module_color,
+            schema=self.schema,
+            show_module=self.show_module,
+            theme_color=self.theme_color)
 
         _tags, _routes, _links = self.handle_hide(_tags, _routes, _links)
         return renderer.render_dot(_tags, _routes, _nodes, _links, True)

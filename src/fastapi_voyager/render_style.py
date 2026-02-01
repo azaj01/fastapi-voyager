@@ -3,10 +3,19 @@ Style constants and configuration for rendering DOT graphs and HTML tables.
 """
 from dataclasses import dataclass, field
 
+from fastapi_voyager.introspectors.detector import FrameworkType
+
 
 @dataclass
 class ColorScheme:
     """Color scheme for graph visualization."""
+
+    # Framework-specific theme colors (single source of truth)
+    FRAMEWORK_COLORS: dict[FrameworkType, str] = field(default_factory=lambda: {
+        FrameworkType.FASTAPI: '#009485',
+        FrameworkType.DJANGO_NINJA: '#4cae4f',
+        FrameworkType.LITESTAR: '#edb641',
+    })
 
     # Node colors
     primary: str = '#009485'
@@ -29,6 +38,10 @@ class ColorScheme:
 
     # Text colors
     text_gray: str = '#999'
+
+    def get_framework_color(self, framework_type: FrameworkType) -> str:
+        """Get theme color for a specific framework type."""
+        return self.FRAMEWORK_COLORS.get(framework_type, self.primary)
 
 
 @dataclass
