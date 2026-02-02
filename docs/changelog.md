@@ -196,10 +196,11 @@
         - enable if er diagram is enabled
         - entities in er diagram should be labeled as "Entity" after the title, and title should be bold
     - [x] 3.click esc to cancel search
-    - [ ] 4.show loader name
-    - [ ] 5.show relationship list when double click entity in er diagram
-    - [ ] 6.highlight entity in use case
-    - [ ] 7.change cli -m param, use `path.to.module:app` instead.
+- 0.17.1
+    - [ ] 1.show loader name
+    - [ ] 2.show relationship list when double click entity in er diagram
+    - [ ] 3.highlight entity in use case
+    - [ ] 4.change cli -m param, use `path.to.module:app` instead.
 
 ## 1.0, release 
     - [ ] add tests
