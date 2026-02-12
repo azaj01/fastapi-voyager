@@ -176,14 +176,25 @@ export class MagnifyingGlass {
       }
     }
 
-    // Move lens group to mouse position
-    this.lensGroup.attr("transform", `translate(${svgP.x}, ${svgP.y})`)
+    // 调整放大镜位置，使其在鼠标上方，靠近下方边缘外侧
+    // 偏移量：向下一点，让鼠标位于放大镜底部边缘外侧
+    const offsetX = 0
+    const offsetY = this.radius + 10 // 放大镜半径 + 10 像素偏移
 
-    // Move clipPath circle to mouse position (important for clipping)
+    const lensX = svgP.x + offsetX
+    const lensY = svgP.y - offsetY // 向上偏移
+
+    // Move lens group to adjusted position
+    this.lensGroup.attr("transform", `translate(${lensX}, ${lensY})`)
+
+    // Move clipPath circle to original mouse position (保持内容对齐)
     d3.select(`#${this.clipPathId} circle`).attr("cx", svgP.x).attr("cy", svgP.y)
 
-    // Move lens border circle to mouse position
-    this.lensGroup.select(".lens-border").attr("cx", svgP.x).attr("cy", svgP.y)
+    // Move lens border circle to adjusted position relative to lens group
+    this.lensGroup
+      .select(".lens-border")
+      .attr("cx", svgP.x - lensX)
+      .attr("cy", svgP.y - lensY)
 
     // Update magnified content
     this._updateContent(svgP.x, svgP.y)
