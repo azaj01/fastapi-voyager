@@ -40,3 +40,25 @@
   user-select: none;
   cursor: default;
 }
+
+/* ==================== */
+/* Magnifying Glass Styles */
+/* ==================== */
+
+.magnifying-lens {
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.magnifying-lens .lens-border {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.magnifying-lens .lens-content {
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+svg.magnifier-active {
+  cursor: none;
+}

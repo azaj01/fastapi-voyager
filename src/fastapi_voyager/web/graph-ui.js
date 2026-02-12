@@ -17,6 +17,7 @@ export class GraphUI {
 
     this.gv = null
     this.currentSelection = []
+    this.magnifyingGlass = null
     this._init()
   }
 
@@ -153,6 +154,36 @@ export class GraphUI {
   }
 
   // ====================
+  // Magnifying Glass Methods
+  // ====================
+
+  _initMagnifyingGlass() {
+    // Destroy existing magnifier if any
+    if (this.magnifyingGlass) {
+      this.magnifyingGlass.destroy()
+      this.magnifyingGlass = null
+    }
+
+    // Only initialize if enabled in options (default: true)
+    if (this.options.enableMagnifyingGlass !== false) {
+      const svgElement = document.querySelector(`${this.selector} svg`)
+      if (svgElement) {
+        import("./magnifying-glass.js")
+          .then((module) => {
+            const { MagnifyingGlass } = module
+            this.magnifyingGlass = new MagnifyingGlass(svgElement, {
+              magnification: 2.0,
+              radius: 156, // Increased by 30% (120 * 1.3 = 156)
+            })
+          })
+          .catch((err) => {
+            console.warn("Failed to load magnifying glass module:", err)
+          })
+      }
+    }
+  }
+
+  // ====================
   // Initialization & Events
   // ====================
 
@@ -260,6 +291,10 @@ export class GraphUI {
           .on("end", () => {
             $(this.selector).data("graphviz.svg").setup()
             if (resetZoom) this.graphviz.resetZoom()
+
+            // Initialize magnifying glass after render
+            this._initMagnifyingGlass()
+
             resolve()
           })
       } catch (err) {
