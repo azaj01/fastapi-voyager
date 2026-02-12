@@ -43,7 +43,13 @@ export class MagnifyingGlass {
     this.clipPathId = `lens-clip-${Math.random().toString(36).substr(2, 9)}`
     console.log("[MagnifyingGlass] clipPathId:", this.clipPathId)
 
-    defs.append("clipPath").attr("id", this.clipPathId).append("circle").attr("r", this.radius)
+    defs
+      .append("clipPath")
+      .attr("id", this.clipPathId)
+      .append("circle")
+      .attr("r", this.radius)
+      .attr("cx", 0)
+      .attr("cy", 0)
 
     // 2. Create lens group (initially hidden)
     this.lensGroup = d3
@@ -60,6 +66,8 @@ export class MagnifyingGlass {
       .attr("fill", "rgba(255,255,255,0.95)")
       .attr("stroke", "#999")
       .attr("stroke-width", 2)
+      .attr("cx", 0) // Initialize at origin, will be updated on mouse move
+      .attr("cy", 0)
 
     // 4. Create clipped content group
     this.lensContent = this.lensGroup
@@ -93,6 +101,13 @@ export class MagnifyingGlass {
     }
 
     this._handleMouseMove = (e) => {
+      // 记录最后鼠标位置，用于第一次激活时的位置计算
+      const rect = this.svg.getBoundingClientRect()
+      this._lastMousePos = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      }
+
       if (this.active) {
         this._updatePosition(e)
       }
@@ -133,15 +148,42 @@ export class MagnifyingGlass {
    * @private
    */
   _performUpdate(event) {
-    // Convert screen coordinates to SVG coordinates
+    // 使用 SVG 标准的坐标转换方法，代替 getBoundingClientRect()
     const pt = this.svg.createSVGPoint()
     pt.x = event.clientX
     pt.y = event.clientY
-    const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse())
 
-    // Move lens group (the circle and clipPath are inside, so they move with it)
-    // The circle center is at (0,0) relative to the group, so we just translate the group
+    let svgP
+    try {
+      // 转换为 SVG 坐标（考虑 SVG 内部所有变换）
+      const ctm = this.svg.getScreenCTM()
+      if (!ctm || !ctm.inverse) {
+        // 如果 getScreenCTM() 失败，退回到简单方法
+        const rect = this.svg.getBoundingClientRect()
+        svgP = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        }
+      } else {
+        svgP = pt.matrixTransform(ctm.inverse())
+      }
+    } catch (e) {
+      // 容错处理
+      const rect = this.svg.getBoundingClientRect()
+      svgP = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      }
+    }
+
+    // Move lens group to mouse position
     this.lensGroup.attr("transform", `translate(${svgP.x}, ${svgP.y})`)
+
+    // Move clipPath circle to mouse position (important for clipping)
+    d3.select(`#${this.clipPathId} circle`).attr("cx", svgP.x).attr("cy", svgP.y)
+
+    // Move lens border circle to mouse position
+    this.lensGroup.select(".lens-border").attr("cx", svgP.x).attr("cy", svgP.y)
 
     // Update magnified content
     this._updateContent(svgP.x, svgP.y)
@@ -156,28 +198,19 @@ export class MagnifyingGlass {
     const mainGroup = d3.select(this.svg).select("g")
     if (mainGroup.empty()) return
 
-    // Throttle: only update if moved more than 5 pixels
-    if (this._lastPosition) {
-      const dist = Math.sqrt(
-        Math.pow(x - this._lastPosition.x, 2) + Math.pow(y - this._lastPosition.y, 2)
-      )
-      if (dist < 5) return
-    }
-    this._lastPosition = { x, y }
-
-    // Clear old content
+    // 移除节流，确保内容实时更新
     this.lensContent.html("")
 
     // Clone main graph content using D3's clone method
     const clonedContent = mainGroup.clone(true).node()
     this.lensContent.node().appendChild(clonedContent)
 
-    // Apply scale transform centered at the mouse position
-    // The lens group is at (x, y), so we need to:
-    // 1. Translate so point (x,y) moves to origin (0,0) - the lens center
-    // 2. Then scale from that center point
+    // Apply correct transform: 居中到(x,y)，然后缩放
+    // 关键修复：考虑 SVG 原始位置
     const scale = this.magnification
     this.lensContent.attr("transform", `translate(${-x}, ${-y}) scale(${scale})`)
+
+    this._lastPosition = { x, y }
   }
 
   /**
@@ -188,6 +221,33 @@ export class MagnifyingGlass {
     this.active = true
     this.lensGroup.style("display", null)
     d3.select(this.svg).classed("magnifier-active", true)
+
+    // 解决第一次激活时的位置问题
+    // 获取当前鼠标位置并立即更新内容
+    this._updateContentFromCurrentMouse()
+  }
+
+  // 获取当前鼠标位置（跨浏览器兼容）
+  _getCurrentMousePosition() {
+    if (typeof this._lastMousePos !== "undefined") {
+      return this._lastMousePos
+    }
+
+    // 作为备用方案，如果没有记录位置，返回 SVG 中心
+    const rect = this.svg.getBoundingClientRect()
+    return { x: rect.width / 2, y: rect.height / 2 }
+  }
+
+  // 使用当前鼠标位置更新内容
+  _updateContentFromCurrentMouse() {
+    const currentMousePos = this._getCurrentMousePosition()
+    if (currentMousePos) {
+      // 模拟事件对象
+      this._performUpdate({
+        clientX: currentMousePos.x + this.svg.getBoundingClientRect().left,
+        clientY: currentMousePos.y + this.svg.getBoundingClientRect().top,
+      })
+    }
   }
 
   /**
