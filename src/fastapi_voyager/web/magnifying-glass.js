@@ -229,13 +229,21 @@ export class MagnifyingGlass {
       }
     }
 
-    // 计算鼠标在 SVG 坐标系中的绝对坐标
-    const absoluteX = lensX * this.magnification + x
-    const absoluteY = lensY * this.magnification + y
+    // 计算鼠标在 SVG 坐标系中的绝对坐标（正确的计算方式）
+    const absoluteX = lensX + x
+    const absoluteY = lensY + y
 
     // Apply correct transform: 基于 SVG 坐标系，将内容居中到鼠标位置然后缩放
     const scale = this.magnification
-    this.lensContent.attr("transform", `translate(${-absoluteX}, ${-absoluteY}) scale(${scale})`)
+    const offsetY = this.radius + 10
+
+    // 正确的公式:
+    // tx = -scale * absoluteX (让 absoluteX 变换后对应 x=0)
+    // ty = offsetY - scale * absoluteY (让 absoluteY 变换后对应 y=offsetY，即 clipPath 圆心)
+    this.lensContent.attr(
+      "transform",
+      `translate(${-scale * absoluteX}, ${offsetY - scale * absoluteY}) scale(${scale})`
+    )
 
     this._lastPosition = { x: absoluteX, y: absoluteY }
   }

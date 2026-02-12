@@ -172,7 +172,7 @@ export class GraphUI {
           .then((module) => {
             const { MagnifyingGlass } = module
             this.magnifyingGlass = new MagnifyingGlass(svgElement, {
-              magnification: 2.0,
+              magnification: 3.0,
               radius: 400,
             })
           })
