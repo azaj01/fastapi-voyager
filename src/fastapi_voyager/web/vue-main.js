@@ -33,6 +33,7 @@ const app = createApp({
     store.state.filter.hidePrimitiveRoute = loadToggleState("hide_primitive", false)
     store.state.filter.brief = loadToggleState("brief_mode", false)
     store.state.filter.showModule = loadToggleState("show_module_cluster", false)
+    store.state.filter.magnification = loadToggleState("magnification", 3.0)
 
     function initGraphUI() {
       if (graphUI) {
@@ -253,6 +254,15 @@ const app = createApp({
       e.preventDefault()
     }
 
+    function getMagnificationLabels() {
+      return {
+        2: "2x",
+        3: "3x",
+        4: "4x",
+        5: "5x",
+      }
+    }
+
     watch(
       () => store.state.graph.schemaMap,
       () => {
@@ -331,6 +341,13 @@ const app = createApp({
       renderErDiagram,
       togglePydanticResolveMeta: (val) => store.actions.togglePydanticResolveMeta(val, onGenerate),
       resetDetailPanels: () => store.actions.resetDetailPanels(),
+      getMagnificationLabels,
+      updateMagnification: (val) => {
+        store.actions.updateMagnification(val)
+        if (graphUI && graphUI.magnifyingGlass) {
+          graphUI.magnifyingGlass.magnification = val
+        }
+      },
     }
   },
 })

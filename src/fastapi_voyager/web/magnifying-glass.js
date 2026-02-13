@@ -33,7 +33,7 @@ export class MagnifyingGlass {
     }
 
     this.svg = svgElement
-    this.magnification = this._validateNumber(
+    this._magnification = this._validateNumber(
       options.magnification,
       MagnifyingGlass.DEFAULT_MAGNIFICATION,
       0.1,
@@ -53,6 +53,30 @@ export class MagnifyingGlass {
 
     this._initLens()
     this._bindEvents()
+  }
+
+  /**
+   * Get current magnification
+   */
+  get magnification() {
+    return this._magnification
+  }
+
+  /**
+   * Set magnification and update lens if active
+   * @param {number} value - New magnification value
+   */
+  set magnification(value) {
+    const validated = this._validateNumber(value, MagnifyingGlass.DEFAULT_MAGNIFICATION, 0.1, 10)
+    if (validated !== this._magnification) {
+      this._magnification = validated
+      this._log("Magnification updated to:", validated)
+
+      // 如果放大镜当前激活，立即更新显示
+      if (this.active && this._lastPosition) {
+        this._updateTransform(this._lastPosition.x, this._lastPosition.y)
+      }
+    }
   }
 
   /**

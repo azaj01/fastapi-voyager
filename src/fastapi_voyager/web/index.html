@@ -546,6 +546,25 @@
                       title="show fields with pydantic resolve/post/expose/collector info"
                     />
                   </div>
+                  <!-- Magnification slider -->
+                  <div class="q-mt-sm q-ml-sm" v-if="store.state.mode === 'voyager'">
+                    <div class="text-caption q-mb-xs" style="color: #666">
+                      Magnification: {{ store.state.filter.magnification.toFixed(1) }}x
+                    </div>
+                    <q-slider
+                      v-model="store.state.filter.magnification"
+                      :min="2"
+                      :max="5"
+                      :step="0.5"
+                      label
+                      :marker-labels="getMagnificationLabels()"
+                      @update:model-value="(val) => updateMagnification(val)"
+                      color="primary"
+                      dense
+                      style="max-width: 200px"
+                      title="Adjust magnifying glass zoom level (2x - 5x)"
+                    />
+                  </div>
                 </div>
 
                 <!-- Collapse toggle button for tag navigator - at bottom-left of right panel -->

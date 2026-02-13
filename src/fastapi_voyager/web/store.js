@@ -103,6 +103,7 @@ const state = reactive({
     showFields: "object",
     brief: false,
     showModule: false,
+    magnification: 3.0, // Magnifying glass zoom level (2-5)
   },
 })
 
@@ -462,6 +463,20 @@ const actions = {
       console.warn("Failed to save hide_primitive to localStorage", e)
     }
     onGenerate(false)
+  },
+
+  /**
+   * Update magnifying glass magnification
+   * @param {number} val - New magnification value (2-5)
+   */
+  updateMagnification(val) {
+    const validatedValue = Math.max(2, Math.min(5, val))
+    state.filter.magnification = validatedValue
+    try {
+      localStorage.setItem("magnification", JSON.stringify(validatedValue))
+    } catch (e) {
+      console.warn("Failed to save magnification to localStorage", e)
+    }
   },
 
   /**
