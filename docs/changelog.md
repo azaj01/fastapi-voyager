@@ -197,6 +197,16 @@
         - entities in er diagram should be labeled as "Entity" after the title, and title should be bold
     - [x] 3.click esc to cancel search
 - 0.17.1
+    - [x] add magnification slider to adjust magnifying glass zoom level (2x-5x)
+    - [x] refactor magnifying glass module
+        - fix magnification offset issue when value changes
+        - optimize performance with content caching (reduce 90%+ DOM operations)
+        - add parameter validation and error handling
+        - extract constants and eliminate code redundancy
+        - add configurable debug logging
+    - [x] change double-click highlight color to orange (#FF8C00)
+    - [x] set minimum width for schema nodes (100px) to prevent narrow display
+- 0.17.2
     - [ ] 1.show loader name
     - [ ] 2.show relationship list when double click entity in er diagram
     - [ ] 3.highlight entity in use case
